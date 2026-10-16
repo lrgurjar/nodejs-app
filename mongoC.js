@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+//passwrd
+
 const password = encodeURIComponent((process.env.MONGO_PASSWORD || "").trim());
 
 if (!password) {
