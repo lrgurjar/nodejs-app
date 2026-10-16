@@ -3,8 +3,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-//passwrd
-
 const password = encodeURIComponent((process.env.MONGO_PASSWORD || "").trim());
 
 if (!password) {
@@ -15,10 +13,12 @@ const connectionString = `mongodb+srv://leelaramg334_db_user:${password}@devclus
 
 const client = new MongoClient(connectionString);
 
-await client.connect();
+export async function connectDB() {
+  await client.connect();
 
-console.log("MongoDB connection successful");
+  console.log("MongoDB connection successful");
 
-const db = client.db("integration_ninjas");
+  return client.db("integration_ninjas");
+}
 
-export default db;
+export default client;

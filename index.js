@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-import db from "./mongoC.js";
+import { connectDB } from "./mongoC.js";
 
 dotenv.config();
 
@@ -20,27 +20,21 @@ app.use((req, res, next) => {
   next();
 });
 
-// Parse URL-encoded data
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Parse JSON data
 app.use(bodyParser.json());
 
+let db;
+
 app.get("/", (req, res) => {
-  res.status(200).send("Hello World, from express in was ec2");
+  res.status(200).send("Hello World, from Express on AWS EC2");
 });
 
-// Add a user
 app.post("/addUser", async (req, res) => {
   try {
-    const collection = db.collection("users");
-
-    const newDocument = {
+    const result = await db.collection("users").insertOne({
       ...req.body,
       date: new Date(),
-    };
-
-    const result = await collection.insertOne(newDocument);
+    });
 
     res.status(201).json({
       message: "User added successfully",
@@ -48,29 +42,31 @@ app.post("/addUser", async (req, res) => {
     });
   } catch (error) {
     console.error("Error adding user:", error);
-
-    res.status(500).json({
-      message: "Failed to add user",
-    });
+    res.status(500).json({ message: "Failed to add user" });
   }
 });
 
-// Get all users
 app.get("/getUsers", async (req, res) => {
   try {
-    const collection = db.collection("users");
-    const results = await collection.find({}).toArray();
-
+    const results = await db.collection("users").find({}).toArray();
     res.status(200).json(results);
   } catch (error) {
     console.error("Error fetching users:", error);
-
-    res.status(500).json({
-      message: "Failed to fetch users",
-    });
+    res.status(500).json({ message: "Failed to fetch users" });
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is listening at port: ${port}`);
-});
+async function startServer() {
+  try {
+    db = await connectDB();
+
+    app.listen(port, "0.0.0.0", () => {
+      console.log(`Server is listening at port: ${port}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error.message);
+    process.exitCode = 1;
+  }
+}
+
+startServer();
