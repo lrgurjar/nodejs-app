@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
-  res.status(200).send("Hello World, from express");
+  res.status(200).send("Hello World, from express in was ec2");
 });
 
 // Add a user
