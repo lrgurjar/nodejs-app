@@ -5,6 +5,7 @@ import { connectDB } from "./mongoC.js";
 
 dotenv.config();
 
+//port
 const port = process.env.PORT || 4000;
 const app = express();
 
